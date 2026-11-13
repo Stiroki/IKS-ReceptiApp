@@ -27,7 +27,6 @@ export class RecipeService {
       servings: 4,
       totalPrepTimeMinutes: 50,
       mainImageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600',
-      additionalImageUrls: [],
       ingredients: [
         {
           ingredient: {
@@ -107,8 +106,6 @@ export class RecipeService {
       dietTypes: ['vegetarijanska'],
       allergens: [
         { id: 1, name: 'gluten' },
-        { id: 2, name: 'mleko' },
-        { id: 3, name: 'jaja' },
         { id: 4, name: 'kikiriki' }
       ],
       servings: 2,

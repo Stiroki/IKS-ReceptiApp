@@ -5,7 +5,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatIconModule } from '@angular/material/icon';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { RecipeCard } from './components/recipe-card/recipe-card';
 
@@ -17,8 +16,7 @@ import { RecipeCard } from './components/recipe-card/recipe-card';
     MatDialogModule,
     MatButtonModule,
     MatCardModule,
-    MatChipsModule,
-    MatIconModule
+    MatChipsModule
   ],
   exports: [ConfirmDialog, RecipeCard]
 })

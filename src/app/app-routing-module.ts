@@ -1,17 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth-guard';
 import { adminGuard } from './core/guards/admin-guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'profile/milana_chef', pathMatch: 'full' },
   {
     path: 'home',
     loadChildren: () => import('./features/home/home-module').then(m => m.HomeModule)
-  },
-  {
-    path: 'auth',
-    loadChildren: () => import('./features/auth/auth-module').then(m => m.AuthModule)
   },
   {
     path: 'profile',
@@ -27,12 +22,10 @@ const routes: Routes = [
   },
   {
     path: 'pantry',
-    canActivate: [authGuard],
     loadChildren: () => import('./features/pantry/pantry-module').then(m => m.PantryModule)
   },
   {
     path: 'shopping-lists',
-    canActivate: [authGuard],
     loadChildren: () => import('./features/shopping-list/shopping-list-module').then(m => m.ShoppingListModule)
   },
   {
@@ -41,15 +34,14 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [authGuard, adminGuard],
+    canActivate: [adminGuard],
     loadChildren: () => import('./features/admin/admin-module').then(m => m.AdminModule)
   },
   {
     path: 'notifications',
-    canActivate: [authGuard],
     loadChildren: () => import('./features/notifications/notifications-module').then(m => m.NotificationsModule)
   },
-  { path: '**', redirectTo: 'home' }
+  { path: '**', redirectTo: 'profile/milana_chef' }
 ];
 
 @NgModule({

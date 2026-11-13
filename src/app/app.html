@@ -1,5 +1,5 @@
 <mat-toolbar color="primary" class="main-navbar" *ngIf="currentUser$ | async as user">
-  <span class="brand" routerLink="/home">🍲 ReceptiApp</span>
+  <span class="brand" [routerLink]="['/profile', user.username]">🍲 ReceptiApp</span>
 
   <div class="nav-links">
     <a mat-button routerLink="/home">Početna</a>

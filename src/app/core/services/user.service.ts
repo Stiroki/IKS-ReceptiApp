@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { User } from '../models/user.model';
+import { User, UserRole } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +12,11 @@ export class UserService {
     {
       id: 1,
       username: 'milana_chef',
-      email: 'milana.m@gmail.com',
+      email: 'milana@gmail.com',
       role: 'ADMIN',
       profileImageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300',
       region: 'Vojvodina, Srbija',
-      bio: 'Ljubitelj domaće kuhinje, italijanske paste i brzih recepata.',
+      bio: 'Ljubitelj domaće kuhinje i brzih recepata.',
       publishedRecipesCount: 2
     },
     {
@@ -56,11 +56,12 @@ export class UserService {
     return this.usersSubject.value.find(u => u.username === username);
   }
 
-  switchRole(role: 'USER' | 'ADMIN'): void {
+  switchRole(role: UserRole): void {
     const updated = { ...this.currentUserSubject.value, role };
     this.currentUserSubject.next(updated);
   }
 
+  // Stavka 2: Menjaju se samo slika, biografija i region (username ostaje nepromenjen)
   updateProfile(userId: number, changes: { profileImageUrl?: string; bio?: string; region?: string }): void {
     const users = this.usersSubject.value.map(u =>
       u.id === userId ? { ...u, ...changes } : u
