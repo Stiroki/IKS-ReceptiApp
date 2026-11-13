@@ -1,0 +1,51 @@
+<mat-card class="detail-card" *ngIf="recipe">
+  <div class="header-bar">
+    <div>
+      <h1>{{ recipe.title }}</h1>
+      <p>
+        Autor: <a [routerLink]="['/profile', recipe.authorUsername]">@{{ recipe.authorUsername }}</a> |
+        Poreklo: {{ recipe.origin?.city }}, {{ recipe.origin?.region }}, {{ recipe.origin?.country }}
+      </p>
+    </div>
+    <div class="owner-btns" *ngIf="isOwner">
+      <button mat-stroked-button color="primary" [routerLink]="['/recipes', recipe.id, 'edit']">Izmeni recept</button>
+      <button mat-flat-button color="warn" (click)="deleteRecipe()">Obriši recept</button>
+    </div>
+  </div>
+
+  <img [src]="recipe.mainImageUrl" [alt]="recipe.title" class="hero-img" />
+
+  <p class="story-box" *ngIf="recipe.story">📖 <em>"{{ recipe.story }}"</em></p>
+
+  <div class="allergens-bar" *ngIf="recipe.allergens.length > 0">
+    <strong>Prisutni alergeni:</strong>
+    <mat-chip-set>
+      <mat-chip *ngFor="let a of recipe.allergens" color="warn" highlighted>{{ a.name }}</mat-chip>
+    </mat-chip-set>
+  </div>
+
+  <div class="two-col">
+    <section>
+      <h2>Sastojci (za {{ recipe.servings }} osobe)</h2>
+      <ul>
+        <li *ngFor="let item of recipe.ingredients">
+          <span [class.branded-ingredient]="item.ingredient.isBranded">
+            {{ item.ingredient.name }}
+            <small *ngIf="item.ingredient.isBranded">[Brend: {{ item.ingredient.brandName }}]</small>
+          </span>:
+          <strong>{{ item.amount ? item.amount + ' ' + item.unit : item.unit }}</strong>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Koraci pripreme ({{ recipe.totalPrepTimeMinutes }} min ukupno)</h2>
+      <div *ngFor="let s of recipe.steps" class="step-box">
+        <h4>Korak {{ s.stepNumber }} – {{ s.title }} ({{ s.preparationType }})</h4>
+        <p>{{ s.description }}</p>
+        <img *ngIf="s.imageUrl" [src]="s.imageUrl" [alt]="s.title" class="step-img" />
+        <small *ngIf="s.durationMinutes">⏱ Trajanje: {{ s.durationMinutes }} min</small>
+      </div>
+    </section>
+  </div>
+</mat-card>
