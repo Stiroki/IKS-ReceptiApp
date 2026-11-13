@@ -8,7 +8,7 @@ export interface UnifiedCatalogRow {
   id: number;
   name: string;
   entityType: 'TIP_RECEPTA' | 'KATEGORIJA_NAMIRNICA' | 'ALERGEN';
-  subGroup?: string;
+  subGroup: string;
 }
 
 @Component({
@@ -55,7 +55,7 @@ export class CatalogManagement implements OnInit, AfterViewInit {
   }
 
   private rebuildTable(): void {
-    const rows: UnifiedCatalogRow[] = [
+    this.dataSource.data = [
       ...this.types.map(t => ({
         id: t.id,
         name: t.name,
@@ -75,7 +75,6 @@ export class CatalogManagement implements OnInit, AfterViewInit {
         subGroup: 'Alergen'
       }))
     ];
-    this.dataSource.data = rows;
   }
 
   applyFilter(event: Event): void {

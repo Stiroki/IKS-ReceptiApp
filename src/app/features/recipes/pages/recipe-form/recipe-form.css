@@ -1,0 +1,47 @@
+.form-wrapper {
+  padding: 24px;
+}
+.step-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+.row-2, .row-3, .ingredient-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.flex-2 {
+  flex: 2;
+}
+.branded-text {
+  color: #d97706;
+  font-weight: 700;
+}
+.allergens-box {
+  padding: 12px 16px;
+  background: #fff8f6;
+  border-left: 4px solid #ef4444;
+  border-radius: 6px;
+}
+.step-card {
+  padding: 16px;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+.drop-zone {
+  border: 2px dashed #3f51b5;
+  border-radius: 10px;
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  background: #f5f7ff;
+}
+.stepper-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}

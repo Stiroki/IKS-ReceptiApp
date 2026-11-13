@@ -1,8 +1,6 @@
 <div class="admin-wrapper">
-  <h1>Administracija šifarnika (Tipovi recepata, Kategorije namirnica, Alergeni)</h1>
 
   <mat-card class="add-card">
-    <h3>Dodaj novi entitet u sistem</h3>
     <div class="form-row">
       <mat-form-field appearance="outline">
         <mat-label>Naziv stavke</mat-label>
@@ -10,7 +8,6 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Vrsta šifarnika</mat-label>
         <mat-select [(ngModel)]="newEntityType">
           <mat-option value="TIP_RECEPTA">Tip recepta</mat-option>
           <mat-option value="KATEGORIJA_NAMIRNICA">Kategorija namirnice</mat-option>
@@ -32,7 +29,6 @@
   </mat-card>
 
   <mat-form-field appearance="outline" class="search-field">
-    <mat-label>Pretraži šifarnike (po nazivu, vrsti ili grupi)...</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Unesi pojam za filtriranje tabele" />
   </mat-form-field>
 

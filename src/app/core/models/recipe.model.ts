@@ -1,15 +1,21 @@
 import { Allergen, RecipeIngredientItem } from './ingredient.model';
 
 export type PreparationType =
-  | 'KUVANJE' | 'PECENJE' | 'PRZENJE' | 'DINSTANJE'
-  | 'GRILOVANJE' | 'POHOVANJE' | 'KUVANJE_NA_PARI'
-  | 'BEZ_TERMICKE_OBRADE' | 'OSTALO';
+  | 'KUVANJE'
+  | 'PECENJE'
+  | 'PRZENJE'
+  | 'DINSTANJE'
+  | 'GRILOVANJE'
+  | 'POHOVANJE'
+  | 'KUVANJE_NA_PARI'
+  | 'BEZ_TERMICKE_OBRADE'
+  | 'OSTALO';
 
 export interface PreparationStep {
   stepNumber: number;
   title: string;
   description: string;
-  imageUrls?: string[];
+  imageUrl?: string;
   preparationType: PreparationType;
   durationMinutes?: number; // Obavezno za sve osim BEZ_TERMICKE_OBRADE i OSTALO
 }
@@ -18,8 +24,6 @@ export interface RecipeOrigin {
   country?: string;
   region?: string;
   city?: string;
-  latitude?: number;
-  longitude?: number;
 }
 
 export interface Recipe {
@@ -35,7 +39,6 @@ export interface Recipe {
   servings: number;
   totalPrepTimeMinutes: number;
   mainImageUrl: string;
-  additionalImageUrls?: string[];
   videoUrl?: string;
   ingredients: RecipeIngredientItem[];
   steps: PreparationStep[];
@@ -43,8 +46,5 @@ export interface Recipe {
   story?: string;
   averageRating: number;
   ratingsCount: number;
-  originalRecipeId?: number;
-  originalRecipeTitle?: string;
-  modificationNote?: string;
   createdAt: string;
 }
