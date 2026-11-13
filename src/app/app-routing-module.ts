@@ -2,9 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { adminGuard } from './core/guards/admin-guard';
-
+import { CatalogManagement } from './pages/catalog-management/catalog-management';
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', component: CatalogManagement },
   {
     path: 'home',
     loadChildren: () => import('./features/home/home-module').then(m => m.HomeModule)
