@@ -1,0 +1,56 @@
+<div class="profile-container" *ngIf="profileUser">
+  <mat-card class="profile-header-card">
+    <div class="profile-main">
+      <img [src]="profileUser.profileImageUrl" alt="Profilna slika" class="avatar-img" />
+      <div class="profile-info">
+        <h1>@{{ profileUser.username }}</h1>
+        <p class="region-badge">📍 Region: <strong>{{ profileUser.region }}</strong></p>
+        <p class="bio-text">{{ profileUser.bio || 'Korisnik nije dodao biografiju.' }}</p>
+        <p class="recipe-counter">Ukupan broj objavljenih recepata: <strong>{{ userRecipes.length }}</strong></p>
+      </div>
+      <div class="profile-actions" *ngIf="isOwnProfile">
+        <button mat-stroked-button color="primary" (click)="editMode = !editMode">
+          {{ editMode ? 'Zatvori izmenu' : 'Izmeni profil' }}
+        </button>
+        <button mat-flat-button color="primary" routerLink="/recipes/new">+ Dodaj novi recept</button>
+      </div>
+    </div>
+
+    <form *ngIf="editMode && isOwnProfile" [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="edit-profile-form">
+      <h3>Izmena profila (Korisničko ime @{{ profileUser.username }} nije moguće menjati)</h3>
+      <p class="hint">Promena regiona važi samo za nove recepte i ne menja region već objavljenih recepata.</p>
+
+      <mat-form-field appearance="outline">
+        <mat-label>URL profilne slike</mat-label>
+        <input matInput formControlName="profileImageUrl" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Region korisnika</mat-label>
+        <input matInput formControlName="region" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Biografija (opciono)</mat-label>
+        <textarea matInput rows="3" formControlName="bio"></textarea>
+      </mat-form-field>
+
+      <button mat-flat-button color="accent" type="submit" [disabled]="profileForm.invalid">
+        Sačuvaj izmene profila
+      </button>
+    </form>
+  </mat-card>
+
+  <section class="recipes-section">
+    <h2>Objavljeni recepti korisnika @{{ profileUser.username }} ({{ userRecipes.length }})</h2>
+    <div class="recipes-grid">
+      <app-recipe-card
+        *ngFor="let r of userRecipes"
+        [recipe]="r"
+        [showOwnerActions]="isOwnProfile"
+        (editClicked)="onEditRecipe($event)"
+        (deleteClicked)="onDeleteRecipe($event)">
+      </app-recipe-card>
+    </div>
+  </section>
+</div>
