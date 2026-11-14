@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" class="main-navbar" *ngIf="currentUser$ | async as user">
+  <span class="brand" [routerLink]="['/profile', user.username]">🍲 ReceptiApp</span>
+
+  <div class="nav-links">
+    <a mat-button routerLink="/home">Početna</a>
+    <a mat-button routerLink="/search">Pretraga</a>
+    <a mat-button routerLink="/recipes/new">+ Novi recept</a>
+    <a mat-button [routerLink]="['/profile', user.username]">Moj profil ({{ user.username }})</a>
+    <a mat-button [routerLink]="['/profile', 'marko_kuvar']">Tuđi profil (Marko)</a>
+    <a mat-button routerLink="/admin" *ngIf="user.role === 'ADMIN'">Admin šifarnici</a>
+  </div>
+
+  <div class="role-switcher">
+    <small>KT1 Uloga: </small>
+    <button mat-stroked-button color="accent" (click)="onRoleChange(user.role === 'ADMIN' ? 'USER' : 'ADMIN')">
+      {{ user.role }} (Promeni)
+    </button>
+  </div>
+</mat-toolbar>
+
+<main class="main-container">
+  <router-outlet></router-outlet>
+</main>
