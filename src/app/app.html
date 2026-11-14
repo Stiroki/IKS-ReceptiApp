@@ -2,18 +2,20 @@
   <span class="brand" [routerLink]="['/profile', user.username]">🍲 ReceptiApp</span>
 
   <div class="nav-links">
-    <a mat-button routerLink="/home">Početna</a>
-    <a mat-button routerLink="/search">Pretraga</a>
-    <a mat-button routerLink="/recipes/new">+ Novi recept</a>
-    <a mat-button [routerLink]="['/profile', user.username]">Moj profil ({{ user.username }})</a>
-    <a mat-button [routerLink]="['/profile', 'marko_kuvar']">Tuđi profil (Marko)</a>
-    <a mat-button routerLink="/admin" *ngIf="user.role === 'ADMIN'">Admin šifarnici</a>
+    <a mat-button routerLink="/home" routerLinkActive="active-tab">Početna</a>
+    <a mat-button [routerLink]="['/profile', 'milana_chef']" routerLinkActive="active-tab">Profil: Milana</a>
+    <a mat-button [routerLink]="['/profile', 'marko_kuvar']" routerLinkActive="active-tab">Profil: Marko</a>
+    <a mat-button routerLink="/admin" routerLinkActive="active-tab" *ngIf="user.role === 'ADMIN'">
+      Admin šifarnici
+    </a>
   </div>
 
   <div class="role-switcher">
-    <small>KT1 Uloga: </small>
-    <button mat-stroked-button color="accent" (click)="onRoleChange(user.role === 'ADMIN' ? 'USER' : 'ADMIN')">
-      {{ user.role }} (Promeni)
+    <button mat-stroked-button color="accent" type="button" (click)="toggleUser()">
+      Nalog: {{ user.username }} (Promeni nalog)
+    </button>
+    <button mat-stroked-button color="accent" type="button" (click)="toggleRole(user.role)">
+      Uloga: {{ user.role }}
     </button>
   </div>
 </mat-toolbar>

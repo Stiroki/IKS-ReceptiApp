@@ -1,12 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { combineLatest } from 'rxjs';
 import { UserService } from '../../../../core/services/user.service';
-import { RecipeService } from '../../../../core/services/recipe.service';
 import { User } from '../../../../core/models/user.model';
-import { Recipe } from '../../../../core/models/recipe.model';
-import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-profile-page',
@@ -16,34 +13,33 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 })
 export class ProfilePage implements OnInit {
   profileUser?: User;
-  userRecipes: Recipe[] = [];
   isOwnProfile = false;
   editMode = false;
   profileForm!: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private userService: UserService,
-    private recipeService: RecipeService,
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const username = params.get('username') || this.userService.currentUserValue.username;
-      this.loadProfile(username);
-    });
+    combineLatest([this.route.paramMap, this.userService.getCurrentUser()]).subscribe(
+      ([params, currentUser]) => {
+        const username = params.get('username') || currentUser.username;
+        this.loadProfile(username, currentUser);
+        this.cdr.markForCheck();
+      }
+    );
   }
 
-  loadProfile(username: string): void {
+  loadProfile(username: string, currentUser: User): void {
     this.profileUser = this.userService.getUserByUsername(username);
-    const current = this.userService.currentUserValue;
-    this.isOwnProfile = this.profileUser?.id === current.id;
+    this.isOwnProfile = this.profileUser?.id === currentUser.id;
+    this.editMode = false;
 
     if (this.profileUser) {
-      this.userRecipes = this.recipeService.getRecipesByAuthor(this.profileUser.username);
       this.profileForm = this.fb.group({
         profileImageUrl: [this.profileUser.profileImageUrl || '', Validators.required],
         region: [this.profileUser.region || '', Validators.required],
@@ -55,29 +51,7 @@ export class ProfilePage implements OnInit {
   saveProfile(): void {
     if (!this.profileUser || this.profileForm.invalid) return;
     this.userService.updateProfile(this.profileUser.id, this.profileForm.value);
-    this.editMode = false;
-    this.loadProfile(this.profileUser.username);
-  }
-
-  onEditRecipe(recipeId: number): void {
-    this.router.navigate(['/recipes', recipeId, 'edit']);
-  }
-
-  onDeleteRecipe(recipeId: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: 'Potvrda brisanja recepta',
-        message: 'Da li ste sigurni da želite trajno da obrišete ovaj recept?',
-        confirmText: 'Obriši recept',
-        cancelText: 'Odustani'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed && this.profileUser) {
-        this.recipeService.deleteRecipe(recipeId);
-        this.loadProfile(this.profileUser.username);
-      }
-    });
+    this.loadProfile(this.profileUser.username, this.userService.currentUserValue);
+    this.cdr.markForCheck();
   }
 }
