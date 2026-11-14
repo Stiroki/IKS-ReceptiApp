@@ -1,0 +1,45 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.profile-header-card {
+  padding: 24px;
+}
+.profile-main {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.avatar-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.profile-info {
+  flex: 1;
+}
+.profile-actions {
+  display: flex;
+  gap: 12px;
+}
+.edit-profile-form {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.hint {
+  font-size: 0.85rem;
+  color: #666;
+}
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
