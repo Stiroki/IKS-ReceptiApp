@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { combineLatest, map, Observable } from 'rxjs';
 import { Recipe } from '../../../../core/models/recipe.model';
@@ -12,9 +12,14 @@ import { UserService } from '../../../../core/services/user.service';
   selector: 'app-home-page',
   standalone: false,
   templateUrl: './home-page.html',
-  styleUrl: './home-page.css'
+  styleUrl: './home-page.css',
 })
 export class HomePage implements OnInit {
+  private recipeService = inject(RecipeService);
+  private catalogService = inject(CatalogService);
+  private userService = inject(UserService);
+  private router = inject(Router);
+
   selectedTabIndex = 0;
   maxMissingIngredients = 0;
 
@@ -26,15 +31,6 @@ export class HomePage implements OnInit {
   latestRecipes$!: Observable<Recipe[]>;
   pantryMatches$!: Observable<PantryRecipeMatch[]>;
 
-  private maxMissingSubject$ = new Observable<number>();
-
-  constructor(
-    private recipeService: RecipeService,
-    private catalogService: CatalogService,
-    private userService: UserService,
-    private router: Router
-  ) {}
-
   ngOnInit(): void {
     this.currentUser$ = this.userService.getCurrentUser();
     this.allIngredients$ = this.catalogService.getIngredients();
@@ -43,11 +39,11 @@ export class HomePage implements OnInit {
     const recipes$ = this.recipeService.getRecipes();
 
     this.popularRecipes$ = recipes$.pipe(
-      map(recipes => this.recipeService.getPopularRecipesLast30Days(recipes))
+      map((recipes) => this.recipeService.getPopularRecipesLast30Days(recipes)),
     );
 
     this.latestRecipes$ = recipes$.pipe(
-      map(recipes => this.recipeService.getLatestRecipes(recipes))
+      map((recipes) => this.recipeService.getLatestRecipes(recipes)),
     );
 
     this.updatePantryMatchesStream();
@@ -56,15 +52,15 @@ export class HomePage implements OnInit {
   updatePantryMatchesStream(): void {
     this.pantryMatches$ = combineLatest([
       this.recipeService.getRecipes(),
-      this.recipeService.getPantryIngredientIds()
+      this.recipeService.getPantryIngredientIds(),
     ]).pipe(
       map(([recipes, pantryIds]) =>
         this.recipeService.getRecipesByAvailableIngredients(
           recipes,
           pantryIds,
-          this.maxMissingIngredients
-        )
-      )
+          this.maxMissingIngredients,
+        ),
+      ),
     );
   }
 

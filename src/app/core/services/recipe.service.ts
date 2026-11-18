@@ -12,9 +12,11 @@ export interface PantryRecipeMatch {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RecipeService {
+  private userService = inject(UserService);
+
   private readonly STORAGE_KEY = 'kt1_recipes';
   private readonly PANTRY_KEY = 'kt1_user_pantry_ids';
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -34,7 +36,7 @@ export class RecipeService {
       allergens: [
         { id: 1, name: 'gluten' },
         { id: 2, name: 'mleko' },
-        { id: 3, name: 'jaja' }
+        { id: 3, name: 'jaja' },
       ],
       servings: 4,
       totalPrepTimeMinutes: 50,
@@ -47,10 +49,10 @@ export class RecipeService {
             category: { id: 6, name: 'žitarice' },
             defaultUnit: 'gram',
             isBranded: false,
-            allergens: [{ id: 1, name: 'gluten' }]
+            allergens: [{ id: 1, name: 'gluten' }],
           },
           amount: 500,
-          unit: 'gram'
+          unit: 'gram',
         },
         {
           ingredient: {
@@ -60,10 +62,10 @@ export class RecipeService {
             defaultUnit: 'mililitar',
             isBranded: true,
             brandName: 'Imlek Moja Kravica',
-            allergens: [{ id: 2, name: 'mleko' }]
+            allergens: [{ id: 2, name: 'mleko' }],
           },
           amount: 250,
-          unit: 'mililitar'
+          unit: 'mililitar',
         },
         {
           ingredient: {
@@ -72,11 +74,11 @@ export class RecipeService {
             category: { id: 3, name: 'meso' },
             defaultUnit: 'komad',
             isBranded: false,
-            allergens: [{ id: 3, name: 'jaja' }]
+            allergens: [{ id: 3, name: 'jaja' }],
           },
           amount: 3,
-          unit: 'komad'
-        }
+          unit: 'komad',
+        },
       ],
       steps: [
         {
@@ -84,28 +86,28 @@ export class RecipeService {
           title: 'Priprema testa',
           description: 'Pomešati brašno, jaja i mleko dok se masa ne sjedini.',
           preparationType: 'BEZ_TERMICKE_OBRADE',
-          durationMinutes: 5
+          durationMinutes: 5,
         },
         {
           stepNumber: 2,
           title: 'Odmaranje testa',
           description: 'Ostaviti testo da odstoji 20 minuta.',
           preparationType: 'BEZ_TERMICKE_OBRADE',
-          durationMinutes: 20
+          durationMinutes: 20,
         },
         {
           stepNumber: 3,
           title: 'Pečenje hleba',
           description: 'Podmazati pleh i peći 25 minuta na 200 stepeni.',
           preparationType: 'PECENJE',
-          durationMinutes: 25
-        }
+          durationMinutes: 25,
+        },
       ],
       origin: { country: 'Srbija', region: 'Vojvodina', city: 'Novi Sad' },
       story: 'Porodični recept moje bake koji uspeva baš svaki put.',
       averageRating: 4.8,
       ratingsCount: 12,
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
       id: 2,
@@ -118,7 +120,7 @@ export class RecipeService {
       dietTypes: ['vegetarijanska'],
       allergens: [
         { id: 1, name: 'gluten' },
-        { id: 4, name: 'kikiriki' }
+        { id: 4, name: 'kikiriki' },
       ],
       servings: 2,
       totalPrepTimeMinutes: 20,
@@ -131,10 +133,10 @@ export class RecipeService {
             category: { id: 6, name: 'žitarice' },
             defaultUnit: 'gram',
             isBranded: false,
-            allergens: [{ id: 1, name: 'gluten' }]
+            allergens: [{ id: 1, name: 'gluten' }],
           },
           amount: 150,
-          unit: 'gram'
+          unit: 'gram',
         },
         {
           ingredient: {
@@ -144,11 +146,11 @@ export class RecipeService {
             defaultUnit: 'gram',
             isBranded: true,
             brandName: 'GymBeam',
-            allergens: [{ id: 4, name: 'kikiriki' }]
+            allergens: [{ id: 4, name: 'kikiriki' }],
           },
           amount: 40,
-          unit: 'gram'
-        }
+          unit: 'gram',
+        },
       ],
       steps: [
         {
@@ -156,14 +158,14 @@ export class RecipeService {
           title: 'Prženje palačinki',
           description: 'Peći na tiganju po 2 minuta sa svake strane i premazati kikiriki puterom.',
           preparationType: 'PRZENJE',
-          durationMinutes: 15
-        }
+          durationMinutes: 15,
+        },
       ],
       origin: { country: 'Srbija', region: 'Vojvodina', city: 'Novi Sad' },
       story: 'Brzi doručak posle treninga.',
       averageRating: 4.9,
       ratingsCount: 8,
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
       id: 3,
@@ -186,10 +188,10 @@ export class RecipeService {
             category: { id: 6, name: 'žitarice' },
             defaultUnit: 'gram',
             isBranded: false,
-            allergens: [{ id: 1, name: 'gluten' }]
+            allergens: [{ id: 1, name: 'gluten' }],
           },
           amount: 50,
-          unit: 'gram'
+          unit: 'gram',
         },
         {
           ingredient: {
@@ -198,10 +200,10 @@ export class RecipeService {
             category: { id: 7, name: 'začini' },
             defaultUnit: 'po ukusu',
             isBranded: false,
-            allergens: []
+            allergens: [],
           },
-          unit: 'po ukusu'
-        }
+          unit: 'po ukusu',
+        },
       ],
       steps: [
         {
@@ -209,21 +211,19 @@ export class RecipeService {
           title: 'Kuvanje na tihoj vatri',
           description: 'Kuvati sve sastojke 45 minuta.',
           preparationType: 'KUVANJE',
-          durationMinutes: 45
-        }
+          durationMinutes: 45,
+        },
       ],
       origin: { country: 'Srbija', region: 'Šumadija', city: 'Kragujevac' },
       story: 'Tradicionalna okrepljujuća čorba.',
       averageRating: 4.5,
       ratingsCount: 5,
-      createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
-    }
+      createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+    },
   ];
 
   private recipesSubject = new BehaviorSubject<Recipe[]>(this.loadRecipes());
   private pantryIdsSubject = new BehaviorSubject<number[]>(this.loadPantryIds());
-
-  constructor(private userService: UserService) {}
 
   private loadRecipes(): Recipe[] {
     if (!this.isBrowser) return this.initialRecipes;
@@ -251,7 +251,7 @@ export class RecipeService {
   togglePantryIngredient(ingredientId: number): void {
     const current = this.pantryIdsSubject.value;
     const updated = current.includes(ingredientId)
-      ? current.filter(id => id !== ingredientId)
+      ? current.filter((id) => id !== ingredientId)
       : [...current, ingredientId];
 
     if (this.isBrowser) {
@@ -265,19 +265,17 @@ export class RecipeService {
   }
 
   getRecipeById(id: number): Recipe | undefined {
-    return this.recipesSubject.value.find(r => r.id === id);
+    return this.recipesSubject.value.find((r) => r.id === id);
   }
 
   getRecipesByAuthor(username: string): Recipe[] {
-    return this.recipesSubject.value.filter(r => r.authorUsername === username);
+    return this.recipesSubject.value.filter((r) => r.authorUsername === username);
   }
-
-
 
   getPopularRecipesLast30Days(recipes: Recipe[]): Recipe[] {
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     return [...recipes]
-      .filter(r => {
+      .filter((r) => {
         const createdTime = new Date(r.createdAt).getTime();
         return isNaN(createdTime) || createdTime >= thirtyDaysAgo;
       })
@@ -289,38 +287,35 @@ export class RecipeService {
       });
   }
 
-
-
   getLatestRecipes(recipes: Recipe[]): Recipe[] {
     return [...recipes].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   }
-
 
   getRecipesByAvailableIngredients(
     recipes: Recipe[],
     availableIngredientIds: number[],
-    maxMissing = 0
+    maxMissing = 0,
   ): PantryRecipeMatch[] {
     const availableSet = new Set(availableIngredientIds);
 
     return recipes
-      .map(recipe => {
+      .map((recipe) => {
         const missingItems = recipe.ingredients.filter(
-          item => !availableSet.has(item.ingredient.id)
+          (item) => !availableSet.has(item.ingredient.id),
         );
-        const missingIngredientNames = missingItems.map(item => item.ingredient.name);
+        const missingIngredientNames = missingItems.map((item) => item.ingredient.name);
         const missingIngredientsCount = missingItems.length;
 
         return {
           recipe,
           missingIngredientsCount,
           missingIngredientNames,
-          canPrepareImmediately: missingIngredientsCount === 0
+          canPrepareImmediately: missingIngredientsCount === 0,
         };
       })
-      .filter(match => match.missingIngredientsCount <= maxMissing)
+      .filter((match) => match.missingIngredientsCount <= maxMissing)
       .sort((a, b) => {
         if (a.missingIngredientsCount !== b.missingIngredientsCount) {
           return a.missingIngredientsCount - b.missingIngredientsCount;
@@ -329,15 +324,17 @@ export class RecipeService {
       });
   }
 
-  createRecipe(recipeData: Omit<Recipe, 'id' | 'createdAt' | 'averageRating' | 'ratingsCount'>): Recipe {
+  createRecipe(
+    recipeData: Omit<Recipe, 'id' | 'createdAt' | 'averageRating' | 'ratingsCount'>,
+  ): Recipe {
     const current = this.recipesSubject.value;
-    const nextId = current.length ? Math.max(...current.map(r => r.id)) + 1 : 1;
+    const nextId = current.length ? Math.max(...current.map((r) => r.id)) + 1 : 1;
     const newRecipe: Recipe = {
       ...recipeData,
       id: nextId,
       averageRating: 0,
       ratingsCount: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
     const updated = [newRecipe, ...current];
     this.saveRecipes(updated);
@@ -346,15 +343,15 @@ export class RecipeService {
   }
 
   updateRecipe(id: number, updatedData: Partial<Recipe>): void {
-    const updated = this.recipesSubject.value.map(r =>
-      r.id === id ? { ...r, ...updatedData } : r
+    const updated = this.recipesSubject.value.map((r) =>
+      r.id === id ? { ...r, ...updatedData } : r,
     );
     this.saveRecipes(updated);
   }
 
   deleteRecipe(id: number): void {
     const target = this.getRecipeById(id);
-    const updated = this.recipesSubject.value.filter(r => r.id !== id);
+    const updated = this.recipesSubject.value.filter((r) => r.id !== id);
     this.saveRecipes(updated);
     if (target) {
       this.syncAuthorCount(target.authorId, updated);
@@ -362,7 +359,7 @@ export class RecipeService {
   }
 
   private syncAuthorCount(authorId: number, allRecipes: Recipe[]): void {
-    const count = allRecipes.filter(r => r.authorId === authorId).length;
+    const count = allRecipes.filter((r) => r.authorId === authorId).length;
     this.userService.updateRecipeCount(authorId, count);
   }
 }

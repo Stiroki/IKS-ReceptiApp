@@ -15,20 +15,21 @@ module.exports = defineConfig([
     ],
     processor: angular.processInlineTemplates,
     rules: {
-      '@angular-eslint/directive-selector': [
-        'error',
+      "@angular-eslint/prefer-standalone": "off",
+      "@angular-eslint/directive-selector": [
+        "error",
         {
-          type: 'attribute',
-          prefix: 'app',
-          style: 'camelCase',
+          type: "attribute",
+          prefix: "app",
+          style: "camelCase",
         },
       ],
-      '@angular-eslint/component-selector': [
-        'error',
+      "@angular-eslint/component-selector": [
+        "error",
         {
-          type: 'element',
-          prefix: 'app',
-          style: 'kebab-case',
+          type: "element",
+          prefix: "app",
+          style: "kebab-case",
         },
       ],
     },

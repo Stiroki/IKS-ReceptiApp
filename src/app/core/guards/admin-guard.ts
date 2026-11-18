@@ -2,13 +2,12 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 
-export const adminGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = () => {
   const userService = inject(UserService);
   const router = inject(Router);
 
-  if (userService.currentUserValue.role === 'ADMIN') {
+  if (userService.currentUserValue) {
     return true;
   }
-  router.navigate(['/home']);
-  return false;
+  return router.createUrlTree(['/home']);
 };

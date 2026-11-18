@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { adminGuard } from './core/guards/admin-guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'profile/milana_chef', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   {
     path: 'home',
     loadChildren: () => import('./features/home/home-module').then(m => m.HomeModule)
@@ -41,7 +41,7 @@ const routes: Routes = [
     path: 'notifications',
     loadChildren: () => import('./features/notifications/notifications-module').then(m => m.NotificationsModule)
   },
-  { path: '**', redirectTo: 'profile/milana_chef' }
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({

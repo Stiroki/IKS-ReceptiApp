@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,26 +12,24 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
   selector: 'app-profile-page',
   standalone: false,
   templateUrl: './profile-page.html',
-  styleUrl: './profile-page.css'
+  styleUrl: './profile-page.css',
 })
 export class ProfilePage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private userService = inject(UserService);
+  private recipeService = inject(RecipeService);
+  private fb = inject(FormBuilder);
+  private dialog = inject(MatDialog);
+
   profileUser?: User;
   userRecipes: Recipe[] = [];
   isOwnProfile = false;
   editMode = false;
   profileForm!: FormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService,
-    private recipeService: RecipeService,
-    private fb: FormBuilder,
-    private dialog: MatDialog
-  ) {}
-
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const username = params.get('username') || this.userService.currentUserValue.username;
       this.loadProfile(username);
     });
@@ -47,7 +45,7 @@ export class ProfilePage implements OnInit {
       this.profileForm = this.fb.group({
         profileImageUrl: [this.profileUser.profileImageUrl || '', Validators.required],
         region: [this.profileUser.region || '', Validators.required],
-        bio: [this.profileUser.bio || '']
+        bio: [this.profileUser.bio || ''],
       });
     }
   }
@@ -69,11 +67,11 @@ export class ProfilePage implements OnInit {
         title: 'Potvrda brisanja recepta',
         message: 'Da li ste sigurni da želite trajno da obrišete ovaj recept?',
         confirmText: 'Obriši recept',
-        cancelText: 'Odustani'
-      }
+        cancelText: 'Odustani',
+      },
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed && this.profileUser) {
         this.recipeService.deleteRecipe(recipeId);
         this.loadProfile(this.profileUser.username);

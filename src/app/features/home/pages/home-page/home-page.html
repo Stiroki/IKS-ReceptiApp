@@ -1,0 +1,238 @@
+@if (currentUser$ | async; as user) {
+  <section class="home-wrapper">
+    <div class="hero-banner">
+      <div class="hero-content">
+        <h1>Dobrodošli na ReceptiApp</h1>
+        <p>
+          Pronađite proverene kulinarske recepte, istražite šta možete spremiti od namirnica koje
+          već imate kod kuće i organizujte svoje liste za kupovinu.
+        </p>
+        <div class="hero-actions">
+          <button mat-flat-button color="primary" routerLink="/recipes/new">
+            + Objavi novi recept
+          </button>
+          <button mat-stroked-button color="primary" routerLink="/search">Napredna pretraga</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-nav-section">
+      <h2 class="section-title">Brza navigacija</h2>
+      <div class="quick-nav-grid">
+        <mat-card class="nav-tile" routerLink="/search">
+          <div class="tile-icon">🔍</div>
+          <div class="tile-text">
+            <h3>Pretraga recepata</h3>
+            <p>Filtrirajte po tipu jela, ishrani, vremenu i alergenima</p>
+          </div>
+        </mat-card>
+
+        <mat-card class="nav-tile" routerLink="/recipes/new">
+          <div class="tile-icon">📝</div>
+          <div class="tile-text">
+            <h3>Novi recept</h3>
+            <p>Dodajte svoj recept sa koracima pripreme i sastojcima</p>
+          </div>
+        </mat-card>
+
+        <mat-card class="nav-tile" [routerLink]="['/profile', user.username]">
+          <div class="tile-icon">👤</div>
+          <div class="tile-text">
+            <h3>Moj profil</h3>
+            <p>Pregled vaših objavljenih i omiljenih recepata</p>
+          </div>
+        </mat-card>
+
+        <mat-card class="nav-tile" routerLink="/pantry">
+          <div class="tile-icon">🥫</div>
+          <div class="tile-text">
+            <h3>Moje namirnice</h3>
+            <p>Evidencija dostupnih namirnica i rokova trajanja</p>
+          </div>
+        </mat-card>
+
+        <mat-card class="nav-tile" routerLink="/shopping-lists">
+          <div class="tile-icon">🛒</div>
+          <div class="tile-text">
+            <h3>Liste za kupovinu</h3>
+            <p>Planirajte kupovinu i pratite kupljene sastojke</p>
+          </div>
+        </mat-card>
+
+        <mat-card class="nav-tile" routerLink="/map">
+          <div class="tile-icon">🌍</div>
+          <div class="tile-text">
+            <h3>Mapa recepata</h3>
+            <p>Istražite recepte širom sveta po regionu i poreklu</p>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <div class="recipes-tabs-section">
+      <mat-tab-group
+        [(selectedIndex)]="selectedTabIndex"
+        animationDuration="200ms"
+        class="home-tabs"
+      >
+        <mat-tab label="🔥 Popularni recepti">
+          <div class="tab-body">
+            <div class="tab-header-info">
+              <div>
+                <h2>Popularni recepti</h2>
+                <p class="subtitle">Recepti sa najvećom prosečnom ocenom u proteklih 30 dana.</p>
+              </div>
+              <span class="badge-pill">Poslednjih 30 dana</span>
+            </div>
+
+            @if (popularRecipes$ | async; as popularRecipes) {
+              @if (popularRecipes.length > 0) {
+                <div class="recipe-grid">
+                  @for (recipe of popularRecipes; track recipe) {
+                    <app-recipe-card [recipe]="recipe" [showOwnerActions]="false"></app-recipe-card>
+                  }
+                </div>
+              } @else {
+                <div class="empty-state">
+                  <p>Trenutno nema ocenjenih recepata u proteklih mesec dana.</p>
+                </div>
+              }
+            }
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Najnoviji recepti">
+          <div class="tab-body">
+            <div class="tab-header-info">
+              <div>
+                <h2>Najnoviji recepti</h2>
+                <p class="subtitle">Najskorije objavljeni recepti naših kuvara.</p>
+              </div>
+              <span class="badge-pill">Hronološki prikaz</span>
+            </div>
+
+            @if (latestRecipes$ | async; as latestRecipes) {
+              @if (latestRecipes.length > 0) {
+                <div class="recipe-grid">
+                  @for (recipe of latestRecipes; track recipe) {
+                    <app-recipe-card [recipe]="recipe" [showOwnerActions]="false"></app-recipe-card>
+                  }
+                </div>
+              } @else {
+                <div class="empty-state">
+                  <p>Još uvek nema objavljenih recepata.</p>
+                </div>
+              }
+            }
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Spremni po mojim namirnicama">
+          <div class="tab-body">
+            <div class="tab-header-info">
+              <div>
+                <h2>Recepti na osnovu dostupних namirnica</h2>
+                <p class="subtitle">
+                  Označite namirnice koje trenutno imate kod kuće i pogledajte šta možete odmah da
+                  pripremite.
+                </p>
+              </div>
+            </div>
+
+            @if (pantryIds$ | async; as pantryIds) {
+              <mat-card class="pantry-filter-card">
+                <div class="pantry-controls-row">
+                  <div class="pantry-chips-wrapper">
+                    <span class="control-label">Moje dostupne namirnice (klik za izmenu):</span>
+                    <mat-chip-set>
+                      @for (ing of allIngredients$ | async; track ing) {
+                        <mat-chip
+                          [highlighted]="pantryIds.includes(ing.id)"
+                          [color]="pantryIds.includes(ing.id) ? 'primary' : undefined"
+                          (click)="onToggleIngredient(ing.id)"
+                          class="selectable-chip"
+                        >
+                          {{ pantryIds.includes(ing.id) ? '✓ ' : '+ ' }}{{ ing.name }}
+                        </mat-chip>
+                      }
+                    </mat-chip-set>
+                  </div>
+
+                  <div class="missing-tolerance">
+                    <span class="control-label">Dozvoljeno nedostajućih namirnica:</span>
+                    <div class="tolerance-buttons">
+                      <button
+                        mat-stroked-button
+                        [color]="maxMissingIngredients === 0 ? 'primary' : undefined"
+                        [class.active-tolerance]="maxMissingIngredients === 0"
+                        (click)="onMaxMissingChange(0)"
+                      >
+                        Imam sve (0)
+                      </button>
+                      <button
+                        mat-stroked-button
+                        [color]="maxMissingIngredients === 1 ? 'primary' : undefined"
+                        [class.active-tolerance]="maxMissingIngredients === 1"
+                        (click)="onMaxMissingChange(1)"
+                      >
+                        Najviše 1
+                      </button>
+                      <button
+                        mat-stroked-button
+                        [color]="maxMissingIngredients === 2 ? 'primary' : undefined"
+                        [class.active-tolerance]="maxMissingIngredients === 2"
+                        (click)="onMaxMissingChange(2)"
+                      >
+                        Najviše 2
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </mat-card>
+            }
+
+            @if (pantryMatches$ | async; as matches) {
+              @if (matches.length > 0) {
+                <div class="recipe-grid">
+                  @for (match of matches; track match) {
+                    <div class="pantry-card-wrapper">
+                      <div
+                        class="availability-banner"
+                        [class.ready]="match.canPrepareImmediately"
+                        [class.missing]="!match.canPrepareImmediately"
+                      >
+                        @if (match.canPrepareImmediately) {
+                          <span> ✅ Možete odmah pripremiti (imate sve sastojke) </span>
+                        }
+                        @if (!match.canPrepareImmediately) {
+                          <span>
+                            ⚠️ Nedostaje ({{ match.missingIngredientsCount }}):
+                            {{ match.missingIngredientNames.join(', ') }}
+                          </span>
+                        }
+                      </div>
+                      <app-recipe-card
+                        [recipe]="match.recipe"
+                        [showOwnerActions]="false"
+                      ></app-recipe-card>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-state">
+                  <p>
+                    Nijedan recept ne odgovara trenutno izabranim namirnicama (uz najviše
+                    {{ maxMissingIngredients }} nedostajućih sastojaka).
+                  </p>
+                  <button mat-stroked-button color="primary" (click)="onMaxMissingChange(2)">
+                    Prikaži recepte kojima nedostaju do 2 namirnice
+                  </button>
+                </div>
+              }
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </section>
+}
