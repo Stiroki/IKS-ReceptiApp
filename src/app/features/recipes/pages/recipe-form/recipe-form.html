@@ -204,9 +204,11 @@
       <form [formGroup]="mediaOriginForm" class="step-form">
         <div
           class="drop-zone"
+          tabindex="0"
           (dragover)="$event.preventDefault()"
           (drop)="onFileDropped($event)"
           (click)="fileInput.click()"
+          (keydown.enter)="fileInput.click()"
         >
           <p>Prevucite fotografiju jela ovde (Drag & Drop) ili kliknite za odabir fajla</p>
           <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
