@@ -3,23 +3,24 @@
     <mat-card class="profile-header-card">
       <div class="profile-main">
         <img [src]="profileUser.profileImageUrl" alt="Profilna slika" class="avatar-img" />
+
         <div class="profile-info">
           <h1>@{{ profileUser.username }}</h1>
-          <p class="region-badge">
-            📍 Region: <strong>{{ profileUser.region }}</strong>
-          </p>
-          <p class="bio-text">{{ profileUser.bio || 'Korisnik nije dodao biografiju.' }}</p>
+          <p class="region-badge">📍 Region: <strong>{{ profileUser.region }}</strong></p>
+          @if (profileUser.bio) {
+            <p class="bio-text">{{ profileUser.bio }}</p>
+          } @else {
+            <p class="bio-empty">Korisnik nije dodao biografiju.</p>
+          }
           <p class="recipe-counter">
-            Ukupan broj objavljenih recepata: <strong>{{ userRecipes.length }}</strong>
+            Broj objavljenih recepata: <strong>{{ userRecipes.length }}</strong>
           </p>
         </div>
+
         @if (isOwnProfile) {
           <div class="profile-actions">
-            <button mat-stroked-button color="primary" (click)="editMode = !editMode">
-              {{ editMode ? 'Zatvori izmenu' : 'Izmeni profil' }}
-            </button>
-            <button mat-flat-button color="primary" routerLink="/recipes/new">
-              + Dodaj novi recept
+            <button mat-flat-button color="primary" (click)="editMode = !editMode">
+              {{ editMode ? 'Otkaži izmenu' : 'Izmeni profil' }}
             </button>
           </div>
         }
@@ -27,9 +28,10 @@
 
       @if (editMode && isOwnProfile) {
         <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="edit-profile-form">
-          <h3>Izmena profila (Korisničko ime @{{ profileUser.username }} nije moguće menjati)</h3>
+          <h3>Izmena profila</h3>
           <p class="hint">
-            Promena regiona važi samo za nove recepte i ne menja region već objavljenih recepata.
+            Korisničko ime (<strong>@{{ profileUser.username }}</strong>) nije moguće naknadno menjati.
+            Promena regiona ne menja region do sada objavljenih recepata, već samo novih.
           </p>
 
           <mat-form-field appearance="outline">
@@ -47,26 +49,27 @@
             <textarea matInput rows="3" formControlName="bio"></textarea>
           </mat-form-field>
 
-          <button mat-flat-button color="accent" type="submit" [disabled]="profileForm.invalid">
-            Sačuvaj izmene profila
-          </button>
+          <div class="form-actions">
+            <button mat-flat-button color="accent" type="submit" [disabled]="profileForm.invalid">
+              Sačuvaj izmene
+            </button>
+          </div>
         </form>
       }
     </mat-card>
 
     <section class="recipes-section">
       <h2>Objavljeni recepti korisnika @{{ profileUser.username }} ({{ userRecipes.length }})</h2>
-      <div class="recipes-grid">
-        @for (r of userRecipes; track r) {
-          <app-recipe-card
-            [recipe]="r"
-            [showOwnerActions]="isOwnProfile"
-            (editClicked)="onEditRecipe($event)"
-            (deleteClicked)="onDeleteRecipe($event)"
-          >
-          </app-recipe-card>
-        }
-      </div>
+
+      @if (userRecipes.length > 0) {
+        <div class="recipe-grid">
+          @for (r of userRecipes; track r.id) {
+            <app-recipe-card [recipe]="r" [showOwnerActions]="false"></app-recipe-card>
+          }
+        </div>
+      } @else {
+        <p class="no-recipes">Korisnik još uvek nema objavljenih recepata.</p>
+      }
     </section>
   </div>
 }

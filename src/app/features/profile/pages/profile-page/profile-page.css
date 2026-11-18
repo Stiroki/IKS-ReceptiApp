@@ -43,3 +43,23 @@
   gap: 20px;
   margin-top: 16px;
 }
+
+.recipes-section {
+  margin-top: 28px;
+}
+
+.recipes-section h2 {
+  margin: 0 0 16px 0;
+  font-size: 1.3rem;
+}
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.no-recipes {
+  color: #666;
+  font-style: italic;
+}
