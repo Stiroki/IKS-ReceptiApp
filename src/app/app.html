@@ -3,8 +3,8 @@
     <span class="brand" [routerLink]="['/profile', user.username]">🍲 ReceptiApp</span>
 
     <div class="nav-links">
-      <a mat-button routerLink="/home">Početna</a>
-      <a mat-button routerLink="/search">Pretraga</a>
+      <a mat-button routerLink="/home" routerLinkActive="active-tab">Početna</a>
+      <a mat-button routerLink="/search" routerLinkActive="active-tab">Pretraga</a>
       <a mat-button routerLink="/recipes/new">+ Novi recept</a>
       <a mat-button [routerLink]="['/profile', user.username]">Moj profil ({{ user.username }})</a>
       <a mat-button [routerLink]="['/profile', 'marko_kuvar']">Tuđi profil (Marko)</a>
@@ -14,7 +14,7 @@
     </div>
 
     <div class="role-switcher">
-      <small>KT1 Uloga: </small>
+      <small>Uloga: </small>
       <button
         mat-stroked-button
         color="accent"

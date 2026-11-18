@@ -7,7 +7,8 @@ import { User, UserRole } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private readonly STORAGE_KEY = 'kt1_users';
+  private readonly USERS_KEY = 'kt1_users';
+  private readonly ACTIVE_USER_KEY = 'kt1_active_user_id';
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private initialUsers: User[] = [
@@ -34,17 +35,34 @@ export class UserService {
   ];
 
   private usersSubject = new BehaviorSubject<User[]>(this.loadUsers());
-  private currentUserSubject = new BehaviorSubject<User>(this.usersSubject.value[0]);
+  private currentUserSubject = new BehaviorSubject<User>(this.loadActiveUser());
 
   private loadUsers(): User[] {
     if (!this.isBrowser) return this.initialUsers;
-    const saved = window.localStorage.getItem(this.STORAGE_KEY);
-    return saved ? JSON.parse(saved) : this.initialUsers;
+    const saved = window.localStorage.getItem(this.USERS_KEY);
+    if (!saved) return this.initialUsers;
+
+    const parsed: User[] = JSON.parse(saved);
+    // Osiguravamo da oba test korisnika uvek postoje
+    const merged = [...parsed];
+    for (const defUser of this.initialUsers) {
+      if (!merged.some(u => u.id === defUser.id)) {
+        merged.push(defUser);
+      }
+    }
+    return merged;
+  }
+
+  private loadActiveUser(): User {
+    const users = this.usersSubject.value;
+    if (!this.isBrowser) return users[0];
+    const savedId = Number(window.localStorage.getItem(this.ACTIVE_USER_KEY));
+    return users.find(u => u.id === savedId) || users[0];
   }
 
   private saveUsers(users: User[]): void {
     if (this.isBrowser) {
-      window.localStorage.setItem(this.STORAGE_KEY, JSON.stringify(users));
+      window.localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
     }
     this.usersSubject.next(users);
   }
@@ -61,11 +79,25 @@ export class UserService {
     return this.usersSubject.value.find(u => u.username === username);
   }
 
+  toggleActiveUser(): void {
+    const users = this.usersSubject.value;
+    const currentIndex = users.findIndex(u => u.id === this.currentUserSubject.value.id);
+    const nextUser = users[(currentIndex + 1) % users.length];
+
+    if (this.isBrowser) {
+      window.localStorage.setItem(this.ACTIVE_USER_KEY, String(nextUser.id));
+    }
+    this.currentUserSubject.next({ ...nextUser });
+  }
+
   switchRole(role: UserRole): void {
     const updated = { ...this.currentUserSubject.value, role };
+    const users = this.usersSubject.value.map(u => (u.id === updated.id ? updated : u));
+    this.saveUsers(users);
     this.currentUserSubject.next(updated);
   }
 
+  // Izmena sopstvenog profila (slika, biografija, region)
   updateProfile(userId: number, changes: { profileImageUrl?: string; bio?: string; region?: string }): void {
     const users = this.usersSubject.value.map(u =>
       u.id === userId ? { ...u, ...changes } : u
@@ -75,7 +107,7 @@ export class UserService {
     if (this.currentUserSubject.value.id === userId) {
       const updatedCurrent = users.find(u => u.id === userId);
       if (updatedCurrent) {
-        this.currentUserSubject.next(updatedCurrent);
+        this.currentUserSubject.next({ ...updatedCurrent });
       }
     }
   }

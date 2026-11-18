@@ -1,12 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { combineLatest } from 'rxjs';
 import { UserService } from '../../../../core/services/user.service';
-import { RecipeService } from '../../../../core/services/recipe.service';
 import { User } from '../../../../core/models/user.model';
-import { Recipe } from '../../../../core/models/recipe.model';
-import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-profile-page',
@@ -23,7 +20,6 @@ export class ProfilePage implements OnInit {
   private dialog = inject(MatDialog);
 
   profileUser?: User;
-  userRecipes: Recipe[] = [];
   isOwnProfile = false;
   editMode = false;
   profileForm!: FormGroup;
@@ -35,13 +31,12 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  loadProfile(username: string): void {
+  loadProfile(username: string, currentUser: User): void {
     this.profileUser = this.userService.getUserByUsername(username);
-    const current = this.userService.currentUserValue;
-    this.isOwnProfile = this.profileUser?.id === current.id;
+    this.isOwnProfile = this.profileUser?.id === currentUser.id;
+    this.editMode = false;
 
     if (this.profileUser) {
-      this.userRecipes = this.recipeService.getRecipesByAuthor(this.profileUser.username);
       this.profileForm = this.fb.group({
         profileImageUrl: [this.profileUser.profileImageUrl || '', Validators.required],
         region: [this.profileUser.region || '', Validators.required],

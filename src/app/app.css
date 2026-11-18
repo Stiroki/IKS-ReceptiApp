@@ -3,15 +3,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 24px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 .brand {
   font-weight: 700;
   font-size: 1.25rem;
   cursor: pointer;
 }
-.nav-links {
+.nav-links, .role-switcher {
   display: flex;
   gap: 8px;
+  align-items: center;
+}
+.active-tab {
+  background: rgba(255, 255, 255, 0.18);
 }
 .main-container {
   max-width: 1200px;

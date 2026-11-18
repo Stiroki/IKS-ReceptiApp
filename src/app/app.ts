@@ -18,7 +18,17 @@ export class App {
     this.currentUser$ = this.userService.getCurrentUser();
   }
 
-  onRoleChange(role: UserRole): void {
-    this.userService.switchRole(role);
+  toggleUser(): void {
+    this.userService.toggleActiveUser();
+    this.cdr.markForCheck();
+  }
+
+  toggleRole(currentRole: UserRole): void {
+    const nextRole: UserRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
+    this.userService.switchRole(nextRole);
+    if (nextRole !== 'ADMIN' && this.router.url.startsWith('/admin')) {
+      this.router.navigate(['/profile', this.userService.currentUserValue.username]);
+    }
+    this.cdr.markForCheck();
   }
 }
