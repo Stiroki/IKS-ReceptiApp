@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,9 +21,17 @@ interface StepFormValue {
   selector: 'app-recipe-form',
   standalone: false,
   templateUrl: './recipe-form.html',
-  styleUrl: './recipe-form.css'
+  styleUrl: './recipe-form.css',
 })
 export class RecipeForm implements OnInit {
+  private fb = inject(FormBuilder);
+  private catalogService = inject(CatalogService);
+  private recipeService = inject(RecipeService);
+  private userService = inject(UserService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+
   isEditMode = false;
   editingRecipeId?: number;
 
@@ -46,18 +54,8 @@ export class RecipeForm implements OnInit {
     { value: 'POHOVANJE', label: 'Pohovanje' },
     { value: 'KUVANJE_NA_PARI', label: 'Kuvanje na pari' },
     { value: 'BEZ_TERMICKE_OBRADE', label: 'Priprema bez termičke obrade' },
-    { value: 'OSTALO', label: 'Ostalo' }
+    { value: 'OSTALO', label: 'Ostalo' },
   ];
-
-  constructor(
-    private fb: FormBuilder,
-    private catalogService: CatalogService,
-    private recipeService: RecipeService,
-    private userService: UserService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     this.initForms();
@@ -82,33 +80,36 @@ export class RecipeForm implements OnInit {
       dietTypes: [[], Validators.required],
       servings: [4, [Validators.required, Validators.min(1)]],
       totalPrepTimeMinutes: [30, [Validators.required, Validators.min(1)]],
-      story: ['']
+      story: [''],
     });
 
     this.ingredientsForm = this.fb.group({
-      items: this.fb.array([])
+      items: this.fb.array([]),
     });
 
     this.stepsForm = this.fb.group({
-      steps: this.fb.array([])
+      steps: this.fb.array([]),
     });
 
     this.mediaOriginForm = this.fb.group({
-      mainImageUrl: ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600', Validators.required],
+      mainImageUrl: [
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600',
+        Validators.required,
+      ],
       videoUrl: [''],
       country: ['Srbija'],
       region: ['Vojvodina'],
-      city: ['Novi Sad']
+      city: ['Novi Sad'],
     });
   }
 
   private loadCatalogs(): void {
-    this.catalogService.getRecipeTypes().subscribe(items => {
-      this.mealTypesList = items.filter(i => i.group === 'MEAL_TYPE');
-      this.dishTypesList = items.filter(i => i.group === 'DISH_TYPE');
-      this.dietTypesList = items.filter(i => i.group === 'DIET_TYPE');
+    this.catalogService.getRecipeTypes().subscribe((items) => {
+      this.mealTypesList = items.filter((i) => i.group === 'MEAL_TYPE');
+      this.dishTypesList = items.filter((i) => i.group === 'DISH_TYPE');
+      this.dietTypesList = items.filter((i) => i.group === 'DIET_TYPE');
     });
-    this.catalogService.getIngredients().subscribe(ings => {
+    this.catalogService.getIngredients().subscribe((ings) => {
       this.availableIngredients = ings;
     });
   }
@@ -125,7 +126,7 @@ export class RecipeForm implements OnInit {
     const group = this.fb.group({
       ingredient: [ing || null, Validators.required],
       amount: [amount ?? null], // Opciono za npr. "so po ukusu"
-      unit: [unit || ing?.defaultUnit || 'gram', Validators.required]
+      unit: [unit || ing?.defaultUnit || 'gram', Validators.required],
     });
 
     group.get('ingredient')?.valueChanges.subscribe((selected: Ingredient | null) => {
@@ -144,9 +145,9 @@ export class RecipeForm implements OnInit {
   // Stavka 3: Automatsko izračunavanje prisutnih alergena iz izabranih namirnica
   get detectedAllergens(): Allergen[] {
     const map = new Map<number, Allergen>();
-    this.ingredientsArray.controls.forEach(ctrl => {
+    this.ingredientsArray.controls.forEach((ctrl) => {
       const ing: Ingredient | null = ctrl.get('ingredient')?.value;
-      ing?.allergens?.forEach(a => map.set(a.id, a));
+      ing?.allergens?.forEach((a) => map.set(a.id, a));
     });
     return Array.from(map.values());
   }
@@ -163,19 +164,21 @@ export class RecipeForm implements OnInit {
       preparationType: [type, Validators.required],
       durationMinutes: [
         existing?.durationMinutes ?? null,
-        isOptionalDuration ? [] : [Validators.required, Validators.min(1)]
-      ]
+        isOptionalDuration ? [] : [Validators.required, Validators.min(1)],
+      ],
     });
 
-    stepGroup.get('preparationType')?.valueChanges.subscribe((selectedType: PreparationType | null) => {
-      const durationCtrl = stepGroup.get('durationMinutes');
-      if (selectedType === 'BEZ_TERMICKE_OBRADE' || selectedType === 'OSTALO') {
-        durationCtrl?.clearValidators();
-      } else {
-        durationCtrl?.setValidators([Validators.required, Validators.min(1)]);
-      }
-      durationCtrl?.updateValueAndValidity();
-    });
+    stepGroup
+      .get('preparationType')
+      ?.valueChanges.subscribe((selectedType: PreparationType | null) => {
+        const durationCtrl = stepGroup.get('durationMinutes');
+        if (selectedType === 'BEZ_TERMICKE_OBRADE' || selectedType === 'OSTALO') {
+          durationCtrl?.clearValidators();
+        } else {
+          durationCtrl?.setValidators([Validators.required, Validators.min(1)]);
+        }
+        durationCtrl?.updateValueAndValidity();
+      });
 
     this.stepsArray.push(stepGroup);
   }
@@ -217,21 +220,22 @@ export class RecipeForm implements OnInit {
       dietTypes: recipe.dietTypes,
       servings: recipe.servings,
       totalPrepTimeMinutes: recipe.totalPrepTimeMinutes,
-      story: recipe.story || ''
+      story: recipe.story || '',
     });
 
-    recipe.ingredients.forEach(item => {
-      const matchedIng = this.availableIngredients.find(i => i.id === item.ingredient.id) || item.ingredient;
+    recipe.ingredients.forEach((item) => {
+      const matchedIng =
+        this.availableIngredients.find((i) => i.id === item.ingredient.id) || item.ingredient;
       this.addIngredientRow(matchedIng, item.amount, item.unit);
     });
 
-    recipe.steps.forEach(s => {
+    recipe.steps.forEach((s) => {
       this.addStepRow({
         title: s.title,
         description: s.description,
         imageUrl: s.imageUrl,
         preparationType: s.preparationType,
-        durationMinutes: s.durationMinutes
+        durationMinutes: s.durationMinutes,
       });
     });
 
@@ -240,12 +244,17 @@ export class RecipeForm implements OnInit {
       videoUrl: recipe.videoUrl || '',
       country: recipe.origin?.country || '',
       region: recipe.origin?.region || '',
-      city: recipe.origin?.city || ''
+      city: recipe.origin?.city || '',
     });
   }
 
   submitRecipe(): void {
-    if (this.basicForm.invalid || this.ingredientsForm.invalid || this.stepsForm.invalid || this.mediaOriginForm.invalid) {
+    if (
+      this.basicForm.invalid ||
+      this.ingredientsForm.invalid ||
+      this.stepsForm.invalid ||
+      this.mediaOriginForm.invalid
+    ) {
       return;
     }
 
@@ -255,11 +264,11 @@ export class RecipeForm implements OnInit {
           title: 'Potvrda izmene recepta',
           message: 'Da li ste sigurni da želite da sačuvate izmene ovog recepta?',
           confirmText: 'Sačuvaj izmene',
-          cancelText: 'Otkaži'
-        }
+          cancelText: 'Otkaži',
+        },
       });
 
-      dialogRef.afterClosed().subscribe(confirmed => {
+      dialogRef.afterClosed().subscribe((confirmed) => {
         if (confirmed && this.editingRecipeId) {
           this.saveToService(this.editingRecipeId);
         }
@@ -289,13 +298,13 @@ export class RecipeForm implements OnInit {
       origin: {
         country: this.mediaOriginForm.value.country,
         region: this.mediaOriginForm.value.region,
-        city: this.mediaOriginForm.value.city
+        city: this.mediaOriginForm.value.city,
       },
       ingredients: this.ingredientsArray.value,
       steps: rawSteps.map((s, idx) => ({
         ...s,
-        stepNumber: idx + 1
-      }))
+        stepNumber: idx + 1,
+      })),
     };
 
     if (existingId) {

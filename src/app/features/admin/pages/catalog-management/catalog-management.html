@@ -18,14 +18,16 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" *ngIf="newEntityType === 'TIP_RECEPTA'">
-        <mat-label>Podgrupa tipa</mat-label>
-        <mat-select [(ngModel)]="newSubGroup">
-          <mat-option value="MEAL_TYPE">Tip obroka</mat-option>
-          <mat-option value="DISH_TYPE">Tip jela</mat-option>
-          <mat-option value="DIET_TYPE">Tip ishrane</mat-option>
-        </mat-select>
-      </mat-form-field>
+      @if (newEntityType === 'TIP_RECEPTA') {
+        <mat-form-field appearance="outline">
+          <mat-label>Podgrupa tipa</mat-label>
+          <mat-select [(ngModel)]="newSubGroup">
+            <mat-option value="MEAL_TYPE">Tip obroka</mat-option>
+            <mat-option value="DISH_TYPE">Tip jela</mat-option>
+            <mat-option value="DIET_TYPE">Tip ishrane</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
 
       <button mat-flat-button color="primary" (click)="addItem()">+ Dodaj u bazu</button>
     </div>
@@ -45,7 +47,9 @@
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Naziv</th>
-        <td mat-cell *matCellDef="let row"><strong>{{ row.name }}</strong></td>
+        <td mat-cell *matCellDef="let row">
+          <strong>{{ row.name }}</strong>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="entityType">

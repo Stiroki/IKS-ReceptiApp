@@ -3,8 +3,10 @@
   <mat-card-header>
     <mat-card-title>{{ recipe.title }}</mat-card-title>
     <mat-card-subtitle>
-      Autor: <a [routerLink]="['/profile', recipe.authorUsername]">@{{ recipe.authorUsername }}</a>
-      ({{ recipe.authorRegion }})
+      Autor:
+      <a [routerLink]="['/profile', recipe.authorUsername]">@{{ recipe.authorUsername }}</a> ({{
+        recipe.authorRegion
+      }})
     </mat-card-subtitle>
   </mat-card-header>
 
@@ -16,19 +18,25 @@
       <span><strong>Ocena:</strong> ⭐ {{ recipe.averageRating || 'Nema' }}</span>
     </div>
 
-    <div class="chips-section" *ngIf="recipe.allergens.length > 0">
-      <small>Alergeni:</small>
-      <mat-chip-set>
-        <mat-chip *ngFor="let a of recipe.allergens" color="warn" highlighted>{{ a.name }}</mat-chip>
-      </mat-chip-set>
-    </div>
+    @if (recipe.allergens.length > 0) {
+      <div class="chips-section">
+        <small>Alergeni:</small>
+        <mat-chip-set>
+          @for (a of recipe.allergens; track a) {
+            <mat-chip color="warn" highlighted>{{ a.name }}</mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+    }
   </mat-card-content>
 
   <mat-card-actions align="end">
     <button mat-button color="primary" [routerLink]="['/recipes', recipe.id]">Detalji</button>
-    <ng-container *ngIf="showOwnerActions">
-      <button mat-stroked-button color="accent" (click)="editClicked.emit(recipe.id)">Izmeni</button>
+    @if (showOwnerActions) {
+      <button mat-stroked-button color="accent" (click)="editClicked.emit(recipe.id)">
+        Izmeni
+      </button>
       <button mat-flat-button color="warn" (click)="deleteClicked.emit(recipe.id)">Obriši</button>
-    </ng-container>
+    }
   </mat-card-actions>
 </mat-card>

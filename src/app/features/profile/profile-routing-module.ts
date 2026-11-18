@@ -4,7 +4,7 @@ import { ProfilePage } from './pages/profile-page/profile-page';
 
 const routes: Routes = [
   { path: ':username', component: ProfilePage },
-  { path: '', redirectTo: 'zorana_chef', pathMatch: 'full' }
+  { path: '', redirectTo: 'milana_chef', pathMatch: 'full' }
 ];
 
 @NgModule({

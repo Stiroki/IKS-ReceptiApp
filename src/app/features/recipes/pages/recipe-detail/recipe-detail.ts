@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { RecipeService } from '../../../../core/services/recipe.service';
@@ -10,19 +10,17 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
   selector: 'app-recipe-detail',
   standalone: false,
   templateUrl: './recipe-detail.html',
-  styleUrl: './recipe-detail.css'
+  styleUrl: './recipe-detail.css',
 })
 export class RecipeDetail implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private recipeService = inject(RecipeService);
+  private userService = inject(UserService);
+  private dialog = inject(MatDialog);
+
   recipe?: Recipe;
   isOwner = false;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private recipeService: RecipeService,
-    private userService: UserService,
-    private dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -39,11 +37,11 @@ export class RecipeDetail implements OnInit {
         title: 'Potvrda brisanja recepta',
         message: `Da li ste sigurni da želite da obrišete recept "${this.recipe.title}"?`,
         confirmText: 'Obriši',
-        cancelText: 'Otkaži'
-      }
+        cancelText: 'Otkaži',
+      },
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed && this.recipe) {
         this.recipeService.deleteRecipe(this.recipe.id);
         this.router.navigate(['/profile', this.userService.currentUserValue.username]);

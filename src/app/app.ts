@@ -1,5 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserService } from './core/services/user.service';
 import { User, UserRole } from './core/models/user.model';
@@ -8,16 +7,14 @@ import { User, UserRole } from './core/models/user.model';
   selector: 'app-root',
   standalone: false,
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
+  private userService = inject(UserService);
+
   currentUser$: Observable<User>;
 
-  constructor(
-    private userService: UserService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     this.currentUser$ = this.userService.getCurrentUser();
   }
 
