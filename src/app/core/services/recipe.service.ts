@@ -1,22 +1,32 @@
-import {inject, Injectable, PLATFORM_ID} from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Recipe } from '../models/recipe.model';
 import { UserService } from './user.service';
-import {isPlatformBrowser} from '@angular/common';
+
+export interface PantryRecipeMatch {
+  recipe: Recipe;
+  missingIngredientsCount: number;
+  missingIngredientNames: string[];
+  canPrepareImmediately: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipeService {
   private readonly STORAGE_KEY = 'kt1_recipes';
+  private readonly PANTRY_KEY = 'kt1_user_pantry_ids';
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  private defaultPantryIngredientIds: number[] = [1, 2, 3, 5];
 
   private initialRecipes: Recipe[] = [
     {
       id: 1,
       title: 'Domaći hleb iz rerne',
       authorId: 1,
-      authorUsername: 'zorana_chef',
+      authorUsername: 'milana_chef',
       authorRegion: 'Vojvodina, Srbija',
       mealTypes: ['doručak', 'večera'],
       dishType: 'pekarski proizvod',
@@ -95,13 +105,13 @@ export class RecipeService {
       story: 'Porodični recept moje bake koji uspeva baš svaki put.',
       averageRating: 4.8,
       ratingsCount: 12,
-      createdAt: new Date().toISOString()
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: 2,
       title: 'Kremaste proteinske palačinke sa kikirikijem',
       authorId: 1,
-      authorUsername: 'zorana_chef',
+      authorUsername: 'milana_chef',
       authorRegion: 'Vojvodina, Srbija',
       mealTypes: ['doručak', 'deserti'],
       dishType: 'palačinke',
@@ -153,7 +163,7 @@ export class RecipeService {
       story: 'Brzi doručak posle treninga.',
       averageRating: 4.9,
       ratingsCount: 8,
-      createdAt: new Date().toISOString()
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: 3,
@@ -168,7 +178,31 @@ export class RecipeService {
       servings: 6,
       totalPrepTimeMinutes: 45,
       mainImageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600',
-      ingredients: [],
+      ingredients: [
+        {
+          ingredient: {
+            id: 1,
+            name: 'Brašno tip 400',
+            category: { id: 6, name: 'žitarice' },
+            defaultUnit: 'gram',
+            isBranded: false,
+            allergens: [{ id: 1, name: 'gluten' }]
+          },
+          amount: 50,
+          unit: 'gram'
+        },
+        {
+          ingredient: {
+            id: 5,
+            name: 'So',
+            category: { id: 7, name: 'začini' },
+            defaultUnit: 'po ukusu',
+            isBranded: false,
+            allergens: []
+          },
+          unit: 'po ukusu'
+        }
+      ],
       steps: [
         {
           stepNumber: 1,
@@ -178,24 +212,52 @@ export class RecipeService {
           durationMinutes: 45
         }
       ],
+      origin: { country: 'Srbija', region: 'Šumadija', city: 'Kragujevac' },
+      story: 'Tradicionalna okrepljujuća čorba.',
       averageRating: 4.5,
       ratingsCount: 5,
-      createdAt: new Date().toISOString()
+      createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
     }
   ];
 
   private recipesSubject = new BehaviorSubject<Recipe[]>(this.loadRecipes());
+  private pantryIdsSubject = new BehaviorSubject<number[]>(this.loadPantryIds());
 
   constructor(private userService: UserService) {}
 
   private loadRecipes(): Recipe[] {
-    const saved = localStorage.getItem(this.STORAGE_KEY);
+    if (!this.isBrowser) return this.initialRecipes;
+    const saved = window.localStorage.getItem(this.STORAGE_KEY);
     return saved ? JSON.parse(saved) : this.initialRecipes;
   }
 
   private saveRecipes(recipes: Recipe[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recipes));
+    if (this.isBrowser) {
+      window.localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recipes));
+    }
     this.recipesSubject.next(recipes);
+  }
+
+  private loadPantryIds(): number[] {
+    if (!this.isBrowser) return this.defaultPantryIngredientIds;
+    const saved = window.localStorage.getItem(this.PANTRY_KEY);
+    return saved ? JSON.parse(saved) : this.defaultPantryIngredientIds;
+  }
+
+  getPantryIngredientIds(): Observable<number[]> {
+    return this.pantryIdsSubject.asObservable();
+  }
+
+  togglePantryIngredient(ingredientId: number): void {
+    const current = this.pantryIdsSubject.value;
+    const updated = current.includes(ingredientId)
+      ? current.filter(id => id !== ingredientId)
+      : [...current, ingredientId];
+
+    if (this.isBrowser) {
+      window.localStorage.setItem(this.PANTRY_KEY, JSON.stringify(updated));
+    }
+    this.pantryIdsSubject.next(updated);
   }
 
   getRecipes(): Observable<Recipe[]> {
@@ -208,6 +270,63 @@ export class RecipeService {
 
   getRecipesByAuthor(username: string): Recipe[] {
     return this.recipesSubject.value.filter(r => r.authorUsername === username);
+  }
+
+
+
+  getPopularRecipesLast30Days(recipes: Recipe[]): Recipe[] {
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    return [...recipes]
+      .filter(r => {
+        const createdTime = new Date(r.createdAt).getTime();
+        return isNaN(createdTime) || createdTime >= thirtyDaysAgo;
+      })
+      .sort((a, b) => {
+        if (b.averageRating !== a.averageRating) {
+          return b.averageRating - a.averageRating;
+        }
+        return b.ratingsCount - a.ratingsCount;
+      });
+  }
+
+
+
+  getLatestRecipes(recipes: Recipe[]): Recipe[] {
+    return [...recipes].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+
+  getRecipesByAvailableIngredients(
+    recipes: Recipe[],
+    availableIngredientIds: number[],
+    maxMissing = 0
+  ): PantryRecipeMatch[] {
+    const availableSet = new Set(availableIngredientIds);
+
+    return recipes
+      .map(recipe => {
+        const missingItems = recipe.ingredients.filter(
+          item => !availableSet.has(item.ingredient.id)
+        );
+        const missingIngredientNames = missingItems.map(item => item.ingredient.name);
+        const missingIngredientsCount = missingItems.length;
+
+        return {
+          recipe,
+          missingIngredientsCount,
+          missingIngredientNames,
+          canPrepareImmediately: missingIngredientsCount === 0
+        };
+      })
+      .filter(match => match.missingIngredientsCount <= maxMissing)
+      .sort((a, b) => {
+        if (a.missingIngredientsCount !== b.missingIngredientsCount) {
+          return a.missingIngredientsCount - b.missingIngredientsCount;
+        }
+        return b.recipe.averageRating - a.recipe.averageRating;
+      });
   }
 
   createRecipe(recipeData: Omit<Recipe, 'id' | 'createdAt' | 'averageRating' | 'ratingsCount'>): Recipe {
