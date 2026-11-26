@@ -1,22 +1,116 @@
 .recipe-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   height: 100%;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
+  border-color: var(--app-border);
+  background-color: var(--app-surface);
   overflow: hidden;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
-.card-img {
+
+.recipe-card:hover {
+  box-shadow: var(--app-shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-media {
+  width: 100%;
   height: 190px;
-  object-fit: cover;
+  overflow: hidden;
+  background-color: var(--app-surface-subtle);
 }
-.meta-row {
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+}
+
+.card-header {
+  padding: 16px 16px 8px;
+}
+
+.card-title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  color: var(--app-text-muted);
+}
+
+.subtitle-sep {
+  margin: 0 6px;
+}
+
+.card-body {
+  padding: 8px 16px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 0;
+  padding: 10px 12px;
+  background-color: var(--app-surface-subtle);
+  border-radius: var(--app-radius-sm);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.meta-item dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--app-text-muted);
+}
+
+.meta-item dd {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chips-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chips-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card-actions {
+  margin-top: auto;
+  padding: 10px 16px;
+  border-top: 1px solid var(--app-border);
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 12px 0;
-  font-size: 0.9rem;
-}
-.chips-section {
-  margin-top: 8px;
+  gap: 8px;
 }
