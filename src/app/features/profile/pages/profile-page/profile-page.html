@@ -1,25 +1,41 @@
 @if (profileUser) {
-  <div class="profile-container">
-    <mat-card class="profile-header-card">
+  <section class="profile-container">
+    <mat-card class="profile-header-card" appearance="outlined">
       <div class="profile-main">
-        <img [src]="profileUser.profileImageUrl" alt="Profilna slika" class="avatar-img" />
+        <div class="avatar-wrapper">
+          <img
+            [src]="profileUser.profileImageUrl"
+            [alt]="'Profilna slika korisnika ' + profileUser.username"
+            class="avatar-img"
+          />
+        </div>
 
         <div class="profile-info">
-          <h1>@{{ profileUser.username }}</h1>
-          <p class="region-badge">📍 Region: <strong>{{ profileUser.region }}</strong></p>
+          <div class="profile-title-row">
+            <h1 class="profile-username">@{{ profileUser.username }}</h1>
+            <div class="profile-meta">
+              <span class="meta-pill">Region: <strong>{{ profileUser.region }}</strong></span>
+              <span class="meta-pill">
+                Objavljeni recepti: <strong>{{ userRecipes.length }}</strong>
+              </span>
+            </div>
+          </div>
+
           @if (profileUser.bio) {
             <p class="bio-text">{{ profileUser.bio }}</p>
           } @else {
             <p class="bio-empty">Korisnik nije dodao biografiju.</p>
           }
-          <p class="recipe-counter">
-            Broj objavljenih recepata: <strong>{{ userRecipes.length }}</strong>
-          </p>
         </div>
 
         @if (isOwnProfile) {
           <div class="profile-actions">
-            <button mat-flat-button color="primary" (click)="editMode = !editMode">
+            <button
+              mat-stroked-button
+              color="primary"
+              type="button"
+              (click)="editMode = !editMode"
+            >
               {{ editMode ? 'Otkaži izmenu' : 'Izmeni profil' }}
             </button>
           </div>
@@ -28,48 +44,25 @@
 
       @if (editMode && isOwnProfile) {
         <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="edit-profile-form">
-          <h3>Izmena profila</h3>
-          <p class="hint">
-            Korisničko ime (<strong>@{{ profileUser.username }}</strong>) nije moguće naknadno menjati.
-            Promena regiona ne menja region do sada objavljenih recepata, već samo novih.
-          </p>
-
-          <mat-form-field appearance="outline">
-            <mat-label>URL profilne slike</mat-label>
-            <input matInput formControlName="profileImageUrl" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Region korisnika</mat-label>
-            <input matInput formControlName="region" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Biografija (opciono)</mat-label>
-            <textarea matInput rows="3" formControlName="bio"></textarea>
-          </mat-form-field>
-
-          <div class="form-actions">
-            <button mat-flat-button color="accent" type="submit" [disabled]="profileForm.invalid">
-              Sačuvaj izmene
-            </button>
+          <div class="form-header">
+            <h3>Izmena profila</h3>
+            <p class="hint">
+              Korisničko ime (<strong>@{{ profileUser.username }}</strong>) nije moguće naknadno
+              menjati. Promena regiona ne menja region do sada objavljenih recepata, već samo novih.
+            </p>
           </div>
-        </form>
-      }
-    </mat-card>
 
-    <section class="recipes-section">
-      <h2>Objavljeni recepti korisnika @{{ profileUser.username }} ({{ userRecipes.length }})</h2>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>URL profilne slike</mat-label>
+              <input matInput formControlName="profileImageUrl" />
+            </mat-form-field>
 
-      @if (userRecipes.length > 0) {
-        <div class="recipe-grid">
-          @for (r of userRecipes; track r.id) {
-            <app-recipe-card [recipe]="r" [showOwnerActions]="false"></app-recipe-card>
-          }
-        </div>
-      } @else {
-        <p class="no-recipes">Korisnik još uvek nema objavljenih recepata.</p>
-      }
-    </section>
-  </div>
-}
+            <mat-form-field appearance="outline">
+              <mat-label>Region korisnika</mat-label>
+              <input matInput formControlName="region" />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-
