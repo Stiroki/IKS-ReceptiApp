@@ -1,24 +1,30 @@
 @if (currentUser$ | async; as user) {
-  <mat-toolbar color="primary" class="main-navbar">
-    <span class="brand" routerLink="/home">🍲 ReceptiApp</span>
+  <mat-toolbar class="main-navbar">
+    <div class="navbar-inner">
+      <a class="brand" routerLink="/home">ReceptiApp</a>
 
-    <div class="nav-links">
-      <a mat-button routerLink="/home" routerLinkActive="active-tab">Početna</a>
-      <a mat-button routerLink="/search" routerLinkActive="active-tab">Pretraga</a>
-      <a mat-button [routerLink]="['/profile', 'milana_chef']" routerLinkActive="active-tab">Profil: Milana</a>
-      <a mat-button [routerLink]="['/profile', 'marko_kuvar']" routerLinkActive="active-tab">Profil: Marko</a>
-      @if (user.role === 'ADMIN') {
-        <a mat-button routerLink="/admin" routerLinkActive="active-tab">Admin šifarnici</a>
-      }
-    </div>
+      <nav class="nav-links" aria-label="Glavna navigacija">
+        <a mat-button routerLink="/home" routerLinkActive="active-tab">Početna</a>
+        <a mat-button routerLink="/search" routerLinkActive="active-tab">Pretraga</a>
+        <a mat-button [routerLink]="['/profile', 'milana_chef']" routerLinkActive="active-tab">
+          Profil: Milana
+        </a>
+        <a mat-button [routerLink]="['/profile', 'marko_kuvar']" routerLinkActive="active-tab">
+          Profil: Marko
+        </a>
+        @if (user.role === 'ADMIN') {
+          <a mat-button routerLink="/admin" routerLinkActive="active-tab">Admin šifarnici</a>
+        }
+      </nav>
 
-    <div class="role-switcher">
-      <button mat-stroked-button color="accent" type="button" (click)="toggleUser()">
-        Nalog: {{ user.username }} (Promeni nalog)
-      </button>
-      <button mat-stroked-button color="accent" type="button" (click)="toggleRole(user.role)">
-        Uloga: {{ user.role }}
-      </button>
+      <div class="role-switcher">
+        <button mat-stroked-button type="button" (click)="toggleUser()">
+          {{ user.username }} (Promeni)
+        </button>
+        <button mat-stroked-button type="button" (click)="toggleRole(user.role)">
+          Uloga: {{ user.role }}
+        </button>
+      </div>
     </div>
   </mat-toolbar>
 }
